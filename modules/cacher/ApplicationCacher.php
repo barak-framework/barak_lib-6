@@ -69,7 +69,7 @@ class ApplicationCacher {
   }
 
   private static function _clear_read() {
-    if (self::_read(self::CACHEDIR . self::clear_expire))
+    if (!self::_read(self::CACHEDIR . self::clear_expire))
       self::clear();
   }
 
