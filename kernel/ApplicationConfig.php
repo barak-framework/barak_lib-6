@@ -69,7 +69,7 @@ class ApplicationConfig {
   }
 
   // router dosyasını oku
-  public static function route() {
+  public static function routes() {
 
     if (!file_exists(self::ROUTESFILE))
       throw new Exception("Yönlendirme ayar dosyası mevcut değil → " . self::ROUTESFILE);

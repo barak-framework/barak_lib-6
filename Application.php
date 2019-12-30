@@ -4,6 +4,8 @@ class Application {
 
   private static $_config = NULL;
 
+  const KERNELDIR = "lib/kernel/";
+
   public static $timezone = "Europe/Istanbul";
   public static $locale = "tr";
   public static $debug = false;
@@ -11,19 +13,7 @@ class Application {
   public static $cacher = false;
   public static $mailer = false;
   public static $model = false;
-
-  public static function extract() {
-
-    function set($key, $value) {
-      Application::set($key, $value);
-    }
-
-    function modules($keys) {
-      foreach ($keys as $index => $key) {
-        Application::set($key, true);
-      }
-    }
-  }
+  public static $http = false;
 
   public static function set($key, $value) {
     if (!isset(self::${$key}))
@@ -47,19 +37,8 @@ class Application {
 
   public static function run() {
 
-    $time = time();
-
-    // kernel class - start
-    $directories = ['lib/kernel/'];
-    foreach ($directories as $directory) {
-      foreach (glob($directory . "*.php") as $class) {
-        echo $class . "<br/>";
-        require_once $class;
-      }
-    }
-    // kernel class - end
-
-    ApplicationLogger::info("Completed lib in " . sprintf ("(%.2f ms)", (microtime(true) - $time) * 1000));
+    // Kernel class load
+    self::_import_dir(self::KERNELDIR);
 
     // Fatal error handling
     register_shutdown_function('ApplicationDebug::shutdown');
@@ -70,66 +49,101 @@ class Application {
     // Error handling
     set_error_handler('ApplicationDebug::error');
 
-    // config - start
-    self::extract();
+    // Logger init
+    ApplicationLogger::init();
 
-    // Configuration : sets sessions and protection
+    // Config - start
+    self::_alias_for_application();
     ApplicationConfig::application();
 
-    // config options - start
-    date_default_timezone_set(self::$timezone);
-    ApplicationDebug::init(self::$debug);
-    ApplicationI18n::init(self::$locale);
-    // config options - end
+    // Config init - options
+    self::_init_options();
 
-    // config modules - start
-    if (self::$model) {
-      $directories = ['lib/modules/model/', 'app/models/'];
-      foreach ($directories as $directory) {
-        foreach (glob($directory . "*.php") as $class) {
-          require_once $class;
-        }
-      }
-      ApplicationDatabase::init();
-    }
+    // Config init - modules
+    self::_init_modules();
 
-    if (self::$mailer) {
-      $directories = ['lib/modules/mailer/', 'app/mailers/'];
-      foreach ($directories as $directory) {
-        foreach (glob($directory . "*.php") as $class) {
-          require_once $class;
-        }
-      }
-      ApplicationMailer::init();
-    }
-
-    if (self::$cacher) {
-      $directories = ['lib/modules/cacher/'];
-      foreach ($directories as $directory) {
-        foreach (glob($directory . "*.php") as $class) {
-          require_once $class;
-        }
-      }
-      ApplicationCacher::init();
-    }
-    // config modules - end
-    // config - end
+    // Config - end
 
     // Alias : get global functions
     ApplicationAlias::extract();
 
     // Route : load routes in configuration file
-    ApplicationConfig::route();
+    ApplicationConfig::routes();
 
     // Dispatcher : request dispatch to controller
     ApplicationDispatcher::dispatch();
 
+    // Config close - modules
+    self::_close_modules();
+  }
+
+  private static function _init_options() {
+    date_default_timezone_set(self::$timezone);
+    ApplicationDebug::init(self::$debug);
+    ApplicationI18n::init(self::$locale);
+  }
+
+  private static function _init_modules() {
+    if (self::$model) {
+      $directories = ['lib/modules/model/', 'app/models/'];
+      self::_import_dirs($directories);
+      ApplicationDatabase::init();
+    }
+
+    if (self::$mailer) {
+      $directories = ['lib/modules/mailer/', 'app/mailers/'];
+      self::_import_dirs($directories);
+      ApplicationMailer::init();
+    }
+
+    if (self::$cacher) {
+      $directory = 'lib/modules/cacher/';
+      self::_import_dir($directory);
+      ApplicationCacher::init();
+    }
+
+    if (self::$http) {
+      $directory = 'lib/modules/http/';
+      self::_import_dir($directory);
+    }
+  }
+
+  private static function _import_dirs($directories) {
+    foreach ($directories as $directory) {
+    	self::_import_dir($directory);
+    }
+  }
+
+  private static function _import_dir($directory) {
+  	// echo "###<br/>";
+  	// echo $directory . " Yükleniyor...<br/>";
+  	// echo "###<br/>";
+    foreach (glob($directory . "*.php") as $class) {
+    	// echo $class . "<br/>";
+      require_once $class;
+    }
+  }
+
+  private static function _close_modules() {
     // Cacher : close
     if (self::$cacher) ApplicationCacher::close();
 
     // Database : close
     if (self::$model) ApplicationDatabase::close();
-
   }
+
+  private static function _alias_for_application() {
+
+    function set($key, $value) {
+      Application::set($key, $value);
+    }
+
+    function modules($keys) {
+      foreach ($keys as $index => $key) {
+        Application::set($key, true);
+      }
+    }
+  }
+
 }
 ?>
