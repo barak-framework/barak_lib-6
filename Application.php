@@ -6,10 +6,13 @@ class Application {
 
   const KERNELDIR = "lib/kernel/";
 
+  // application config sets
   public static $timezone = "Europe/Istanbul";
   public static $locale = "tr";
   public static $debug = false;
+  public static $logger = false;
 
+  // application modules status
   public static $cacher = false;
   public static $mailer = false;
   public static $model = false;
@@ -39,7 +42,8 @@ class Application {
 
     // Kernel class load
     self::_import_dir(self::KERNELDIR);
-
+echo "dizinler yüklendi";
+echo "<br/>";
     // Fatal error handling
     register_shutdown_function('ApplicationDebug::shutdown');
 
@@ -48,14 +52,13 @@ class Application {
 
     // Error handling
     set_error_handler('ApplicationDebug::error');
-
-    // Logger init
-    ApplicationLogger::init();
-
+echo "shutdown - exception - error ayarlandı";
+echo "<br/>";
     // Config - start
-    self::_alias_for_application();
+    self::_extract();
     ApplicationConfig::application();
-
+echo "uygulama ayarları yüklendi";
+echo "<br/>";
     // Config init - options
     self::_init_options();
 
@@ -78,12 +81,13 @@ class Application {
   }
 
   private static function _init_options() {
+  	ApplicationLogger::init();
     date_default_timezone_set(self::$timezone);
     ApplicationDebug::init(self::$debug);
     ApplicationI18n::init(self::$locale);
   }
 
-  private static function _init_modules() {
+  private static function _init_modules() { // ok
     if (self::$model) {
       $directories = ['lib/modules/model/', 'app/models/'];
       self::_import_dirs($directories);
@@ -108,13 +112,13 @@ class Application {
     }
   }
 
-  private static function _import_dirs($directories) {
+  private static function _import_dirs($directories) { // ok
     foreach ($directories as $directory) {
     	self::_import_dir($directory);
     }
   }
 
-  private static function _import_dir($directory) {
+  private static function _import_dir($directory) { // ok
   	// echo "###<br/>";
   	// echo $directory . " Yükleniyor...<br/>";
   	// echo "###<br/>";
@@ -124,7 +128,7 @@ class Application {
     }
   }
 
-  private static function _close_modules() {
+  private static function _close_modules() { // ok
     // Cacher : close
     if (self::$cacher) ApplicationCacher::close();
 
@@ -132,7 +136,7 @@ class Application {
     if (self::$model) ApplicationDatabase::close();
   }
 
-  private static function _alias_for_application() {
+  private static function _extract() { // ok
 
     function set($key, $value) {
       Application::set($key, $value);

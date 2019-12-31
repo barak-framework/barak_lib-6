@@ -3,12 +3,13 @@
 class ApplicationConfig {
 
   const APPFILE      = "config/application.php";
-  const DATABASEFILE = "config/database.ini";
-  const CACHERFILE   = "config/cacher.ini";
-  const LOGGERFILE   = "config/logger.ini";
-  const MAILERFILE   = "config/mailer.ini";
   const ROUTESFILE   = "config/routes.php";
   const LOCALESDIR   = "config/locales/";
+  const LOGGERFILE   = "config/logger.ini";
+
+  const DATABASEFILE = "config/database.ini";
+  const CACHERFILE   = "config/cacher.ini";
+  const MAILERFILE   = "config/mailer.ini";
 
   // genel yapılandırma ayarlarını set et
   public static function application() {
