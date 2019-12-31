@@ -3,25 +3,26 @@ class ApplicationLogger {
 
   const LOGDIR = "tmp/log/";
 
-  const LEVELNAMES = ["info" => 0, "warning" => 1, "error" => 2, "fatal" => 3, "debug" => 4];
+  const LEVELNAMES = ["info" => 1, "warning" => 2, "error" => 3, "fatal" => 4, "debug" => 5];
   const DRIVERNAMES = ["daily" => 1, "weekly" => 7, "montly" => 30, "yearly" => 365];
 
   private static $_configuration = NULL;
 
-  private static $_file_path = false;
-
+  // configuration variables
   private static $_level = 0;
   private static $_driver = 30; // 30 day
   private static $_file = "production";
   private static $_size = 5242880; // 5 MB = 5 * 1024 * 1024
   private static $_rotate = 5;
 
+  // find and fill path, created_at
+  private static $_file_path = false;
+  private static $_file_created_at = false;
 
   public static function init() {
     // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (self::$_configuration == NULL) {
-echo "init işlemi başarılı başladık";
-echo "<br/>";
+
       foreach (ApplicationConfig::logger() as $key => $value) {
         switch ($key) {
           case "driver":
@@ -44,7 +45,7 @@ echo "<br/>";
         }
       }
 
-      self::$_file_path = self::_create();
+      list(self::$_file_path, self::$_file_created_at) = self::_create();
 
       self::$_configuration = TRUE;
     }
@@ -57,23 +58,20 @@ echo "<br/>";
 
     if (self::$_level <= self::LEVELNAMES[$level]) {
 
-      $message = strval($messages[0]);
+      if (self::$_driver < self::_expire()) {
 
-      // if (self::$_driver < self::_day($file)) {
+        self::_rotate();
 
-      //   self::_rotate($file);
-
-      // } else
-
-      if (self::$_size < filesize(self::$_file_path)) {
+      } else if (self::$_size < filesize(self::$_file_path)) {
 
         self::_rotate();
 
       }
+
+      $message = strval($messages[0]);
       // echo "bu dosya üzerine yaziliyor :" . self::$_file_path . "<br/>";
-      if (!($fh = fopen(self::$_file_path, 'a'))) {
+      if (!($fh = fopen(self::$_file_path, 'a')))
         throw new Exception("Log dosyası açılamadı → " . self::$_file_path);
-        }
 
       fwrite($fh, $message . "\n");
       fclose($fh);
@@ -81,25 +79,27 @@ echo "<br/>";
   }
 
   private static function _newname() {
-    return $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGDIR . self::$_file . "_". date("Y-m-d") .".log";
+    $_file_created_at = date("Y-m-d");
+    $_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGDIR . self::$_file . "_". $_file_created_at .".log";
+    return [$_file_path, $_file_created_at];
   }
 
   private static function _create() {
     // file = production.log
 
-    if (!($file = self::_exists(self::$_file))) {
+    if (!(list($_file_path, $_file_created_at) = self::_exists(self::$_file))) {
 
-      $file = self::_newname();
+      list($_file_path, $_file_created_at) = self::_newname();
 
-      if (!($fh = fopen($file, 'w')))
-        throw new Exception("Log dosyası oluşturulmak için açılamadı → " . $file);
+      if (!($fh = fopen($_file_path, 'w')))
+        throw new Exception("Log dosyası oluşturulmak için açılamadı → " . $_file_path);
 
       fwrite($fh, "");
       fclose($fh);
     }
     // echo "dosya var: ". $file . "<br/>";
 
-    return $file;
+    return [$_file_path, $_file_created_at];
   }
 
   private static function _exists($file) {
@@ -118,7 +118,7 @@ echo "<br/>";
         if ($match[1] == $file) {
           // echo "dosyayı buldum : " . self::LOGDIR . $match[0] . "|" . $file . ":" . $match[1] . "<br/>";
           // print_r($match);
-          return self::LOGDIR . $match[0];
+          return [self::LOGDIR . $match[0], $match[2]];
         }
       }
     }
@@ -148,22 +148,16 @@ echo "<br/>";
     return $_file_path_backups;
   }
 
-  private static function _day($file) {
-    $created_date_file = date("Y-m-d", filectime($file));
-    $now_date = date("Y-m-d");
-    $diff = strtotime($now_date) - strtotime($created_date_file);
+  private static function _expire() {
 
-      // 1 day = 24 hours
-      // 1 day = 24 * 60 * 60 = 86400 seconds
-    return abs(round($diff / 86400));
-  }
+    // now date and file _created_at time diff
+    $_diff_sec = strtotime(date("Y-m-d")) - strtotime(self::$_file_created_at);
 
-  private static function _file_path_backup_after($filepath) {
-    $delimeter_index = strrpos($filepath, '_');
-    $file = substr($filepath, 0, $delimeter_index);
-    $date = substr($filepath, $delimeter_index);
-    // echo "işlem tamamlandı parçalar : $file  <--->  $date <br/>";
-    return [$file, $date];
+    // 1 day = 24 hours
+    // 1 day = 24 * 60 * 60 = 86400 seconds
+    $_diff_day = abs(round($_diff_sec / 86400));
+
+    return $_diff_day;
   }
 
   private static function _rotate() {
@@ -173,7 +167,7 @@ echo "<br/>";
     $_file_rotate_end = self::$_file . "@" . self::$_rotate;
     // echo "son dosya var mı bakılıyor : " . $_file_rotate_end . "<br/>";
 
-    if (($_file_rotate_end_path = self::_exists($_file_rotate_end))) {
+    if ((list($_file_rotate_end_path,$_c) = self::_exists($_file_rotate_end))) {
       // echo "son dosya siliniyor...";
       unlink($_file_rotate_end_path);
     }
@@ -195,15 +189,10 @@ echo "<br/>";
     }
     // echo "ilk dosya kaydırılıyor : " . self::$_file_path . "<br/>";
 
-    list($file, $date) = self::_file_path_backup_after(self::$_file_path);
+    // echo self::$_file_path.">>>>". self::$_file . "@1_" . self::$_file_created_at;
 
-    // print_r($file);
-    // echo "<br/>";
-    // print_r($date);
-    // echo "<br/>";
-
-    rename(self::$_file_path, $file . "@1" . $date);
-    self::$_file_path = self::_newname();
+    rename(self::$_file_path, self::LOGDIR . self::$_file . "@1_" . self::$_file_created_at . ".log");
+    list(self::$_file_path, self::$_file_created_at) = self::_newname();
   }
 }
 ?>
