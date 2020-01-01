@@ -59,7 +59,7 @@ class Application {
     echo "<br/>";
 
     // Config - start
-    self::_extract();
+    self::_alias_extract_config_of_application();
     ApplicationConfig::application();
 
     echo "uygulama ayarları yüklendi";
@@ -142,7 +142,9 @@ class Application {
     if (self::$model) ApplicationDatabase::close();
   }
 
-  private static function _extract() { // ok
+  private static function _alias_extract_config_of_application() { // ok
+
+    // APPLICATION
 
     function set($key, $value) {
       Application::set($key, $value);
@@ -152,6 +154,32 @@ class Application {
       foreach ($keys as $index => $key) {
         Application::set($key, true);
       }
+    }
+
+    // ROUTES
+
+    function scope($path, $routes) {
+      return ApplicationRoutes::scope($path, $routes);
+    }
+
+    function resource($table, $path = "") {
+      return ApplicationRoutes::resource($table, $path);
+    }
+
+    function resources($table, $path = "") {
+      return ApplicationRoutes::resources($table, $path);
+    }
+
+    function root($target = FALSE, $path = "") {
+      return ApplicationRoutes::root($target, $path);
+    }
+
+    function post($rule, $target = FALSE, $path = "") {
+      return ApplicationRoutes::post($rule, $target, $path);
+    }
+
+    function get($rule, $target = FALSE, $path = "") {
+      return ApplicationRoutes::get($rule, $target, $path);
     }
   }
 
