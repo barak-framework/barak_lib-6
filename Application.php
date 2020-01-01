@@ -2,9 +2,9 @@
 
 class Application {
 
-  private static $_config = NULL;
-
   const KERNELDIR = "lib/kernel/";
+
+  private static $_configutaion = NULL;
 
   // application config sets
   public static $timezone = "Europe/Istanbul";
@@ -27,14 +27,14 @@ class Application {
 
   public static function config(callable $_functions) {
     // do not make dublicate config function on config/application.php
-    if (!isset(self::$_config)) {
+    if (!isset(self::$_configutaion)) {
 
       // config processing
       $_functions();
       // config processed
 
       // bir daha ::config fonksiyonu çağrılmaması için
-      self::$_config = TRUE;
+      self::$_configutaion = TRUE;
     }
   }
 
@@ -42,8 +42,10 @@ class Application {
 
     // Kernel class load
     self::_import_dir(self::KERNELDIR);
-echo "dizinler yüklendi";
-echo "<br/>";
+
+    echo "dizinler yüklendi";
+    echo "<br/>";
+
     // Fatal error handling
     register_shutdown_function('ApplicationDebug::shutdown');
 
@@ -52,13 +54,17 @@ echo "<br/>";
 
     // Error handling
     set_error_handler('ApplicationDebug::error');
-echo "shutdown - exception - error ayarlandı";
-echo "<br/>";
+
+    echo "shutdown - exception - error ayarlandı";
+    echo "<br/>";
+
     // Config - start
     self::_extract();
     ApplicationConfig::application();
-echo "uygulama ayarları yüklendi";
-echo "<br/>";
+
+    echo "uygulama ayarları yüklendi";
+    echo "<br/>";
+
     // Config init - options
     self::_init_options();
 

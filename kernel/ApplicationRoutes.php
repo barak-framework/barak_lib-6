@@ -4,8 +4,9 @@ class ApplicationRoutes {
 
   const METHODS = ["get", "post"];
 
+  private static $_configuration = NULL;
+
   private static $_path = "";
-  private static $_draws = NULL;
   private static $_routes = [];
 
   public static function __callStatic($method, array $args) {
@@ -21,14 +22,14 @@ class ApplicationRoutes {
 
   public static function draw(callable $_functions) {
     // do not make dublicate draw function on config/routes.php
-    if (!isset(self::$_draws)) {
+    if (!isset(self::$_configuration)) {
 
       // router processing
       $_functions();
       // router processed
 
       // bir daha ::draws fonksiyonu çağrılmaması için
-      self::$_draws = TRUE;
+      self::$_configuration = TRUE;
     }
 
     /* TEST */
