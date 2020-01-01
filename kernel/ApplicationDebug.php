@@ -143,7 +143,7 @@ class ApplicationDebug {
         background-color: #f4f2f8;
       }
       .header { padding: 1em; }
-      .footer { padding: 1em; clear:both; }
+      .footer { padding: 1em; clear: both; }
       .content {
         border-top: 2px solid #d9d2e8;
         border-bottom: 2px solid #d9d2e8;

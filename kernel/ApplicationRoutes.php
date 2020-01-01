@@ -21,7 +21,8 @@ class ApplicationRoutes {
   }
 
   public static function draw(callable $_functions) {
-    // do not make dublicate draw function on config/routes.php
+
+    // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (!isset(self::$_configuration)) {
 
       // router processing
