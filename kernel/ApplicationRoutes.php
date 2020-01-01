@@ -21,7 +21,6 @@ class ApplicationRoutes {
   }
 
   public static function draw(callable $_functions) {
-
     // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (!isset(self::$_configuration)) {
 

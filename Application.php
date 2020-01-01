@@ -26,7 +26,7 @@ class Application {
   }
 
   public static function config(callable $_functions) {
-    // do not make dublicate config function on config/application.php
+    // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (!isset(self::$_configutaion)) {
 
       // config processing
