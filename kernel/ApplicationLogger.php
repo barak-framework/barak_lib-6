@@ -43,12 +43,6 @@ class ApplicationLogger {
         }
       }
 
-      if (!array_key_exists($level, self::LEVELNAMES))
-        throw new Exception("Logger kullanımı için bilinmeyen level → " . $level);
-
-      if (!array_key_exists($driver, self::DRIVERNAMES))
-        throw new Exception("Logger kullanımı için bilinmeyen sürücü → " . $driver);
-
       list(self::$_file_path, self::$_file_created_at) = self::_create();
 
       self::$_configuration = TRUE;
