@@ -15,6 +15,7 @@ class ApplicationController {
   private $_send_data = NULL;
 
   // options
+  protected $flash = [];
   protected $helpers = NULL;
   protected $before_actions = NULL;
   protected $after_actions = NULL;
@@ -195,8 +196,12 @@ class ApplicationController {
     // kick main action!
     if (method_exists($this, $this->_route->action)) $this->{$this->_route->action}();
 
+    // main action çalışma sonrası
     // içeriğin ne ile döneceğini bilmedğimizi varsayalım
     $main_content = NULL;
+
+    // _localsda flash varsa çalıştıralım
+    if (!empty($this->flash)) ApplicationFlash::sets($this->flash);
 
     // main action için daha önce saklanan _send_data verisini çalıştır ve beklet
     if (!$main_content && $this->_send_data) {
