@@ -9,8 +9,8 @@ class ApplicationLogger {
   private static $_configuration = NULL;
 
   // configuration variables
-  private static $_level = 0;
-  private static $_driver = 30; // 30 day
+  private static $_level = 1; // 1 = info
+  private static $_driver = 30; // 30 day = montly
   private static $_file = "production";
   private static $_size = 5242880; // 5 MB = 5 * 1024 * 1024
   private static $_rotate = 5;
@@ -19,31 +19,21 @@ class ApplicationLogger {
   private static $_file_path = false;
   private static $_file_created_at = false;
 
-  public static function init() {
+  public static function init($file = "production", $level = "info", $driver = "weekly", $rotate = "4", $size = "5242880") {
     // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (self::$_configuration == NULL) {
 
-      foreach (ApplicationConfig::logger() as $key => $value) {
-        switch ($key) {
-          case "driver":
-          if (!array_key_exists($value, self::DRIVERNAMES)) {
-            throw new Exception("Logger kullanımı için bilinmeyen sürücü → " . $value);
-          }
-          self::$_driver = self::DRIVERNAMES[$value];
-          break;
-          case "level":
-          if (!array_key_exists($value, self::LEVELNAMES)) {
-            throw new Exception("Logger kullanımı için bilinmeyen level → " . $value);
-          }
-          self::$_level = self::LEVELNAMES[$value];
-          break;
-          case "file": self::$_file = $value; break;
-          case "size": self::$_size = intval($value); break;
-          case "rotate": self::$_rotate = intval($value); break;
-          default:
-          throw new Exception("Logger yapılandırma dosyasında bilinmeyen parametre → " . $key);
-        }
-      }
+      if (!array_key_exists($level, self::LEVELNAMES))
+        throw new Exception("Logger kullanımı için bilinmeyen level → " . $level);
+
+      if (!array_key_exists($driver, self::DRIVERNAMES))
+        throw new Exception("Logger kullanımı için bilinmeyen sürücü → " . $driver);
+
+      self::$_file = $file;
+      self::$_level = self::LEVELNAMES[$level];
+      self::$_driver = self::DRIVERNAMES[$driver];
+      self::$_rotate = intval($rotate);
+      self::$_size = intval($size);
 
       list(self::$_file_path, self::$_file_created_at) = self::_create();
 
@@ -85,7 +75,6 @@ class ApplicationLogger {
   }
 
   private static function _create() {
-    // file = production.log
 
     if (!(list($_file_path, $_file_created_at) = self::_exists(self::$_file))) {
 
@@ -188,7 +177,6 @@ class ApplicationLogger {
       }
     }
     // echo "ilk dosya kaydırılıyor : " . self::$_file_path . "<br/>";
-
     // echo self::$_file_path.">>>>". self::$_file . "@1_" . self::$_file_created_at;
 
     rename(self::$_file_path, self::LOGDIR . self::$_file . "@1_" . self::$_file_created_at . ".log");
