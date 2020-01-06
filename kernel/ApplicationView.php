@@ -98,14 +98,14 @@ class ApplicationView {
 
     } elseif ($this->layout) { // layout : is not false?
 
-      $template_content = self::_render_for_file(self::_template_path(), $this->locals);
+      $template_content = self::_render_for_file(self::_template_file_path(), $this->locals);
       // $yield değişkeni atanmış ise layout'da bunu kullandırma var ise de üzerine yaz
       $this->locals["yield"] = $template_content;
-      $content = self::_render_for_file(self::_layout_path(), $this->locals);
+      $content = self::_render_for_file(self::_layout_file_path(), $this->locals);
 
     } else { // layout : is false?
 
-      $content = self::_render_for_file(self::_template_path(), $this->locals);
+      $content = self::_render_for_file(self::_template_file_path(), $this->locals);
 
     }
 
@@ -113,7 +113,7 @@ class ApplicationView {
     return $content;
   }
 
-  private function _layout_path() {
+  private function _layout_file_path() {
 
     $layout_file = self::LAYOUTPATH . $this->layout . ".php";
 
@@ -123,7 +123,7 @@ class ApplicationView {
     return $layout_file;
   }
 
-  private function _template_path() {
+  private function _template_file_path() {
 
     $template_file = self::VIEWPATH . $this->template . ".php";
 
