@@ -53,7 +53,6 @@ class ApplicationMailer {
   }
 
   public static function init() {
-
     // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (self::$_configuration == NULL) {
 
