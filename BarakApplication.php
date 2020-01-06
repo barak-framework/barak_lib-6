@@ -3,6 +3,7 @@
 class BarakApplication {
 
   const KERNELDIR = "lib/kernel/";
+  const MODULESDIR = "lib/modules/";
 
   public static function run() {
 
@@ -44,9 +45,7 @@ class BarakApplication {
   }
 
   private static function _init_options() {
-  	if (!Application::$logger) ApplicationLogger::init("production", "info", "weekly", 4, 5288000);
-
-    ApplicationLogger::init(...$logger);
+    ApplicationLogger::init(Application::$logger);
     date_default_timezone_set(Application::$timezone);
     ApplicationDebug::init(Application::$debug);
     ApplicationI18n::init(Application::$locale);
@@ -54,25 +53,25 @@ class BarakApplication {
 
   private static function _init_modules() { // ok
     if (Application::$model) {
-      $directories = ['lib/modules/model/', 'app/models/'];
+      $directories = [self::MODULESDIR . 'model/', 'app/models/'];
       self::_import_dirs($directories);
       ApplicationDatabase::init();
     }
 
     if (Application::$mailer) {
-      $directories = ['lib/modules/mailer/', 'app/mailers/'];
+      $directories = [self::MODULESDIR . 'mailer/', 'app/mailers/'];
       self::_import_dirs($directories);
       ApplicationMailer::init();
     }
 
     if (Application::$cacher) {
-      $directory = 'lib/modules/cacher/';
+      $directory = self::MODULESDIR . 'cacher/';
       self::_import_dir($directory);
       ApplicationCacher::init();
     }
 
     if (Application::$http) {
-      $directory = 'lib/modules/http/';
+      $directory = self::MODULESDIR . 'http/';
       self::_import_dir($directory);
     }
   }
