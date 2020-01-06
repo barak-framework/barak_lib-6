@@ -175,6 +175,7 @@ class ApplicationController {
     if ($this->helpers) ApplicationHelper::load($this->helpers);
 
     // before actions
+    // eğer main_action'a bağlı bir before action çalışacaksa _locals'ı boşalt onu çalıştır
     // eğer _send_data, _redirect_to, _render herhangi biri atanmışsa çalıştır ve sonlandır
     if ($this->before_actions) {
 
@@ -201,19 +202,19 @@ class ApplicationController {
     $main_content = NULL;
 
     // main action için daha önce saklanan _send_data verisini çalıştır ve beklet
-    if ($main_send_data && !$main_content) {
+    if (!$main_content && $main_send_data) {
       $this->_send_data = $main_send_data;
       $main_content = self::_send_data();
     }
 
     // main action için daha önce saklanan _redirect_to verisini çalıştır ve beklet
-    if ($main_redirect_to && !$main_content) {
+    if (!$main_content && $main_redirect_to) {
       $this->_redirect_to = $main_redirect_to;
       $main_content = self::_redirect_to();
     }
 
     // main action için daha önce saklanan _locals ile _render verilerini çalıştır ve beklet
-    if ($main_render && !$main_content) {
+    if (!$main_content && $main_render) {
       $this->_locals = $main_locals;
       $this->_render = $main_render;
       $main_content = self::_render();
@@ -226,7 +227,8 @@ class ApplicationController {
       $main_content = $this->_render();
     }
 
-    // after actions
+    // after_actions
+    // eğer main_action'a bağlı bir after action çalışacaksa _locals'ı boşalt onu çalıştır
     // eğer _send_data, _redirect_to, _render herhangi biri atanmışsa çalıştır ve sonlandır
     if ($this->after_actions) {
       if ($this->_filter($this->_route->action, $this->after_actions)) {
@@ -235,7 +237,7 @@ class ApplicationController {
         if ($this->_render)      return self::_render();
       }
     }
-    
+
     // artık başka çaremiz kalmadı, Dünya'dan kaçıyoruz!
     return $main_content;
   }
