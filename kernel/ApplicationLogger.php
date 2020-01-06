@@ -19,21 +19,35 @@ class ApplicationLogger {
   private static $_file_path = false;
   private static $_file_created_at = false;
 
-  public static function init($file = "production", $level = "info", $driver = "weekly", $rotate = "4", $size = "5242880") {
+  public static function init($options) {
     // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (self::$_configuration == NULL) {
+
+      foreach ($options as $key => $value) {
+        switch ($key) {
+          case "file": self::$_file = $value; break;
+          case "level":
+          if (!array_key_exists($value, self::LEVELNAMES))
+            throw new Exception("Logger kullanımı için bilinmeyen level → " . $value);
+          self::$_level = self::LEVELNAMES[$value];
+          break;
+          case "driver":
+          if (!array_key_exists($value, self::DRIVERNAMES))
+            throw new Exception("Logger kullanımı için bilinmeyen sürücü → " . $value);
+          self::$_driver = self::DRIVERNAMES[$value];
+          break;
+          case "rotate": self::$_rotate = intval($value); break;
+          case "size": self::$_size = intval($value); break;
+          default:
+          throw new Exception("Logger kullanımı için bilinmeyen parametre → " . $key);
+        }
+      }
 
       if (!array_key_exists($level, self::LEVELNAMES))
         throw new Exception("Logger kullanımı için bilinmeyen level → " . $level);
 
       if (!array_key_exists($driver, self::DRIVERNAMES))
         throw new Exception("Logger kullanımı için bilinmeyen sürücü → " . $driver);
-
-      self::$_file = $file;
-      self::$_level = self::LEVELNAMES[$level];
-      self::$_driver = self::DRIVERNAMES[$driver];
-      self::$_rotate = intval($rotate);
-      self::$_size = intval($size);
 
       list(self::$_file_path, self::$_file_created_at) = self::_create();
 
