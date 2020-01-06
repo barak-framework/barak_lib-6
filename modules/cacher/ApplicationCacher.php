@@ -9,8 +9,7 @@ class ApplicationCacher {
   private static $_configuration = NULL;
 
   public static function init() {
-
-  	// yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
+    // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
     if (self::$_configuration == NULL) {
 
       self::$_configuration = new stdClass();
