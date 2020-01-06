@@ -53,26 +53,22 @@ class BarakApplication {
 
   private static function _init_modules() { // ok
     if (Application::$model) {
-      $directories = [self::MODULESDIR . 'model/', 'app/models/'];
-      self::_import_dirs($directories);
+      self::_import_dirs([self::MODULESDIR . 'model/', 'app/models/']);
       ApplicationDatabase::init();
     }
 
     if (Application::$mailer) {
-      $directories = [self::MODULESDIR . 'mailer/', 'app/mailers/'];
-      self::_import_dirs($directories);
+      self::_import_dirs([self::MODULESDIR . 'mailer/', 'app/mailers/']);
       ApplicationMailer::init();
     }
 
     if (Application::$cacher) {
-      $directory = self::MODULESDIR . 'cacher/';
-      self::_import_dir($directory);
+      self::_import_dir(self::MODULESDIR . 'cacher/');
       ApplicationCacher::init();
     }
 
     if (Application::$http) {
-      $directory = self::MODULESDIR . 'http/';
-      self::_import_dir($directory);
+      self::_import_dir(self::MODULESDIR . 'http/');
     }
   }
 
