@@ -187,7 +187,7 @@ class ApplicationController {
     }
 
     // router'in localslarını(sayfadan :id, çekmek için),
-    // controller'dan gelen localslara yükle ki action içerisinden erişebilesin
+    // controller'dan gelen localslara yükle ki main action içerisinden erişebilesin
     $this->_locals = $this->_route->locals;
 
     // kick main action!
