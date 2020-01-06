@@ -38,7 +38,7 @@ class BarakApplication {
     ApplicationConfig::routes();
 
     // Dispatcher : request dispatch to controller
-    ApplicationDispatcher::dispatch();
+    ApplicationDispatcher::run();
 
     // Config close - modules
     self::_close_modules();
