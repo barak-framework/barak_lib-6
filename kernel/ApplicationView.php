@@ -77,6 +77,7 @@ class ApplicationView {
     // sets contiune - end
 
     if ($main_render) {
+      $this->locals["flash"] = ApplicationFlash::gets();
       self::$main_template = $this->template;
       self::$main_layout = $this->layout;
       self::$main_locals = $this->locals;
@@ -94,7 +95,7 @@ class ApplicationView {
 
     } elseif (isset($this->partial)) {
 
-    $content = self::_render_for_file(self::VIEWPATH . preg_replace("~/(?!.*/)~", "/_", $this->partial) . ".php", $this->locals);
+      $content = self::_render_for_file(self::VIEWPATH . preg_replace("~/(?!.*/)~", "/_", $this->partial) . ".php", $this->locals);
 
     } elseif ($this->layout) { // layout : is not false?
 
