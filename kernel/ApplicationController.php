@@ -200,19 +200,19 @@ class ApplicationController {
     $main_render = $this->_render;
     $main_content = NULL;
 
-    // main action için daha önce saklanan _send_data verisini çalıştır ve sonlandır
+    // main action için daha önce saklanan _send_data verisini çalıştır ve beklet
     if ($main_send_data && !$main_content) {
       $this->_send_data = $main_send_data;
       $main_content = self::_send_data();
     }
 
-    // main action için daha önce saklanan _redirect_to verisini çalıştır ve sonlandır
+    // main action için daha önce saklanan _redirect_to verisini çalıştır ve beklet
     if ($main_redirect_to && !$main_content) {
       $this->_redirect_to = $main_redirect_to;
       $main_content = self::_redirect_to();
     }
 
-    // main action için daha önce saklanan _locals ile _render verilerini çalıştır ve sonlandır
+    // main action için daha önce saklanan _locals ile _render verilerini çalıştır ve beklet
     if ($main_render && !$main_content) {
       $this->_locals = $main_locals;
       $this->_render = $main_render;
@@ -221,6 +221,7 @@ class ApplicationController {
 
     // before actions, main action, after actions içerisinde
     // hiçbir şekilde _send_data, _redirect_to, _render için atanan veri yok ise varsayılan _render çalışmalı!
+    // çalıştır ve beklet
     if (!$main_content) {
       $main_content = $this->_render();
     }
