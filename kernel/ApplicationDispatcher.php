@@ -5,7 +5,7 @@ class ApplicationDispatcher {
   // working time in milliseconds
   public static $time;
 
-  public static function dispatch() {
+  public static function run() {
 
     self::$time = microtime(true);
 
