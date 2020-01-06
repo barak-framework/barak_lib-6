@@ -235,7 +235,8 @@ class ApplicationController {
         if ($this->_render)      return self::_render();
       }
     }
-
+    
+    // artık başka çaremiz kalmadı, Dünya'dan kaçıyoruz!
     return $main_content;
   }
 
