@@ -60,11 +60,62 @@ class ApplicationController {
     }
     // main class
     self::_load($route->controller, $route->path);
+
     // run controller class and before_actions, before_afters, helper methods
     $controller_class = ucwords($route->controller) . self::CONTROLLERSUBNAME;
     $c = new $controller_class();
     $c->_route = $route;
     return $c->_run();
+  }
+
+  private function _response_send_data() {
+    $response = new ApplicationResponse();
+    $response->status_code = NULL;
+    $response->content_type = $this->_send_data["content_type"];
+    $response->body = $this->_send_data["options"]; // body and filename
+    return $response;
+  }
+
+  private function _response_redirect_to() {
+    $response = new ApplicationResponse();
+    $response->status_code = 302;
+    $response->content_type = NULL;
+    $response->body = $this->_redirect_to;
+    return $response;
+  }
+
+  private function _response_render() {
+    $v = new ApplicationView();
+
+    // render template
+    if ($this->_route->path) { // have path? for scope, resouce, resouces
+
+      $v->layout = trim($this->_route->path, "/");
+      $v->view = $this->_route->path . $this->_route->controller;
+      $v->action = $this->_route->action;
+
+    } else { // normal path
+
+      $v->view = $this->_route->controller;
+      $v->action = $this->_route->action;
+
+    }
+
+    // controllerin localsları
+    if ($this->_locals)
+      $v->locals = $this->_locals;
+
+    // controllerin renderi
+    if ($this->_render)
+      $v->set($this->_render["view_options"]);
+
+    $body = $v->run(true);
+
+    // response for body
+    $response = new ApplicationResponse();
+    $response->set($this->_render["response_options"]);
+    $response->body = $body;
+    return $response;
   }
 
   private static function _load($file, $path = "") {
@@ -119,56 +170,6 @@ class ApplicationController {
     return FALSE;
   }
 
-  private function _send_data() {
-    $response = new ApplicationResponse();
-    $response->status_code = NULL;
-    $response->content_type = $this->_send_data["content_type"];
-    $response->body = $this->_send_data["options"]; // body and filename
-    return $response;
-  }
-
-  private function _redirect_to() {
-    $response = new ApplicationResponse();
-    $response->status_code = 302;
-    $response->content_type = NULL;
-    $response->body = $this->_redirect_to;
-    return $response;
-  }
-
-  private function _render() {
-    $v = new ApplicationView();
-
-    // render template
-    if ($this->_route->path) { // have path? for scope, resouce, resouces
-
-      $v->layout = trim($this->_route->path, "/");
-      $v->view = $this->_route->path . $this->_route->controller;
-      $v->action = $this->_route->action;
-
-    } else { // normal path
-
-      $v->view = $this->_route->controller;
-      $v->action = $this->_route->action;
-
-    }
-
-    // controllerin localsları
-    if ($this->_locals)
-      $v->locals = $this->_locals;
-
-    // controllerin renderi
-    if ($this->_render)
-      $v->set($this->_render["view_options"]);
-
-    $body = $v->run(true);
-
-    // response for body
-    $response = new ApplicationResponse();
-    $response->set($this->_render["response_options"]);
-    $response->body = $body;
-    return $response;
-  }
-
   private function _run() {
 
     // include helper classes
@@ -181,9 +182,9 @@ class ApplicationController {
 
       if ($this->_filter($this->_route->action, $this->before_actions)) {
 
-        if ($this->_send_data)   return self::_send_data();
-        if ($this->_redirect_to) return self::_redirect_to();
-        if ($this->_render)      return self::_render();
+        if ($this->_send_data)   return $this->_response_send_data();
+        if ($this->_redirect_to) return $this->_response_redirect_to();
+        if ($this->_render)      return $this->_response_render();
       }
     }
 
@@ -194,37 +195,25 @@ class ApplicationController {
     // kick main action!
     if (method_exists($this, $this->_route->action)) $this->{$this->_route->action}();
 
-    // main action için _locals, _send_data, _redirect_to, _render için atanan verileri sakla
-    $main_locals = $this->_locals;
-    $main_send_data = $this->_send_data;
-    $main_redirect_to = $this->_redirect_to;
-    $main_render = $this->_render;
+    // içeriğin ne ile döneceğini bilmedğimizi varsayalım
     $main_content = NULL;
 
     // main action için daha önce saklanan _send_data verisini çalıştır ve beklet
-    if (!$main_content && $main_send_data) {
-      $this->_send_data = $main_send_data;
-      $main_content = self::_send_data();
+    if (!$main_content && $this->_send_data) {
+      $main_content = $this->_response_send_data();
     }
 
     // main action için daha önce saklanan _redirect_to verisini çalıştır ve beklet
-    if (!$main_content && $main_redirect_to) {
-      $this->_redirect_to = $main_redirect_to;
-      $main_content = self::_redirect_to();
+    if (!$main_content && $this->_redirect_to) {
+      $main_content = $this->_response_redirect_to();
     }
 
     // main action için daha önce saklanan _locals ile _render verilerini çalıştır ve beklet
-    if (!$main_content && $main_render) {
-      $this->_locals = $main_locals;
-      $this->_render = $main_render;
-      $main_content = self::_render();
-    }
-
-    // before actions, main action, after actions içerisinde
     // hiçbir şekilde _send_data, _redirect_to, _render için atanan veri yok ise varsayılan _render çalışmalı!
-    // çalıştır ve beklet
+    // ya da
+    // _render atanmış ise(return ile kesilmezse son atanan _render) çalışmalı!
     if (!$main_content) {
-      $main_content = $this->_render();
+      $main_content = $this->_response_render();
     }
 
     // after_actions
@@ -232,9 +221,9 @@ class ApplicationController {
     // eğer _send_data, _redirect_to, _render herhangi biri atanmışsa çalıştır ve sonlandır
     if ($this->after_actions) {
       if ($this->_filter($this->_route->action, $this->after_actions)) {
-        if ($this->_send_data)   return self::_send_data();
-        if ($this->_redirect_to) return self::_redirect_to();
-        if ($this->_render)      return self::_render();
+        if ($this->_send_data)   return $this->_response_send_data();
+        if ($this->_redirect_to) return $this->_response_redirect_to();
+        if ($this->_render)      return $this->_response_render();
       }
     }
 
