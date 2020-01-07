@@ -9,11 +9,11 @@ class ApplicationLogger {
   private static $_configuration = NULL;
 
   // configuration variables
-  private static $_level = 1; // 1 = info
-  private static $_driver = 30; // 30 day = montly
+  private static $_level = 1;            // 1 = info
+  private static $_driver = 30;          // 30 day = montly
   private static $_file = "production";
-  private static $_size = 5242880; // 5 MB = 5 * 1024 * 1024
-  private static $_rotate = 5;
+  private static $_size = 5242880;       // 5 MB = 5 * 1024 * 1024
+  private static $_rotate = 5;           // 5 backup file
 
   // find and fill path, created_at
   private static $_file_path = false;
@@ -107,9 +107,9 @@ class ApplicationLogger {
 
       // self::$_file = FILE
       // $_file =
-      // FILE_2020-01-01
-      // FILE@1_2019-12-31
-      // FILE@2_2019-12-31
+      // FILE_YYYY-MM-DD.log
+      // FILE@1_YYYY-MM-DD.log
+      // FILE@2_YYYY-MM-DD.log
 
       if (preg_match("/^(.*?)_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
         if ($match[1] == $file) {
@@ -132,9 +132,8 @@ class ApplicationLogger {
 
       // self::$_file = FILE
       // $_file =
-      // FILE_2019-12-31
-      // FILE@1_2019-12-31
-      // FILE@2_2019-12-31
+      // FILE@1_YYYY-MM-DD.log
+      // FILE@2_YYYY-MM-DD.log
 
       if (preg_match("/^" . self::$_file . "@" . "(.*?)". "_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
         // print_r($match);
