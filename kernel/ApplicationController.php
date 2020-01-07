@@ -86,6 +86,7 @@ class ApplicationController {
   }
 
   private function _response_render() {
+    // View - start
     $v = new ApplicationView();
 
     // varsayılan render ayarlarını bul
@@ -106,15 +107,20 @@ class ApplicationController {
     if ($this->_locals)
       $v->locals = $this->_locals;
 
-    // controllerin renderi (eğer manuel render varsa üzerine yaz)
+    // Overwrite default render options 
+    // controllerin renderi (main action içerisinde manuel olarak render yazılmışsa)
     if ($this->_render)
       $v->set($this->_render["view_options"]);
 
     $body = $v->run(true);
 
-    // response for body
+    // Response - start
     $response = new ApplicationResponse();
-    $response->set($this->_render["response_options"]);
+
+    // controllerin renderi (main action içerisinde manuel olarak render yazılmışsa)
+    if ($this->_render)
+      $response->set($this->_render["response_options"]);
+
     $response->body = $body;
     return $response;
   }
