@@ -145,9 +145,9 @@ class ApplicationController {
           $this->_locals = [];
 
           // methodların yüklerini boşalt
-          $this->_render = NULL;
-          $this->_redirect_to = NULL;
           $this->_send_data = NULL;
+          $this->_redirect_to = NULL;
+          $this->_render = NULL;
 
           if (array_key_exists("only", $filter_action)) {
 
