@@ -180,9 +180,7 @@ class ApplicationController {
     // eğer main_action'a bağlı bir before action çalışacaksa _locals'ı boşalt onu çalıştır
     // eğer _send_data, _redirect_to, _render herhangi biri atanmışsa çalıştır ve sonlandır
     if ($this->before_actions) {
-
       if ($this->_filter($this->_route->action, $this->before_actions)) {
-
         if ($this->_send_data)   return $this->_response_send_data();
         if ($this->_redirect_to) return $this->_response_redirect_to();
         if ($this->_render)      return $this->_response_render();
