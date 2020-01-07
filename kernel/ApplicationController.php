@@ -88,7 +88,7 @@ class ApplicationController {
   private function _response_render() {
     $v = new ApplicationView();
 
-    // render template
+    // varsayılan render ayarlarını bul
     if ($this->_route->path) { // have path? for scope, resouce, resouces
 
       $v->layout = trim($this->_route->path, "/");
@@ -106,7 +106,7 @@ class ApplicationController {
     if ($this->_locals)
       $v->locals = $this->_locals;
 
-    // controllerin renderi
+    // controllerin renderi (eğer manuel render varsa üzerine yaz)
     if ($this->_render)
       $v->set($this->_render["view_options"]);
 
