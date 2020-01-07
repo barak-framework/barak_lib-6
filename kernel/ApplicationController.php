@@ -153,11 +153,11 @@ class ApplicationController {
 
             if (in_array($action, $filter_action["only"])) $this->{$filter_action_name}();
 
-          } elseif (array_key_exists("except", $filter_action)) {
+          } else if (array_key_exists("except", $filter_action)) {
 
             if (!in_array($action, $filter_action["except"])) $this->{$filter_action_name}();
 
-          } elseif (!array_key_exists("only", $filter_action) and !array_key_exists("except", $filter_action)) {
+          } else if (!array_key_exists("only", $filter_action) and !array_key_exists("except", $filter_action)) {
             $this->{$filter_action_name}();
           }
 
