@@ -107,7 +107,7 @@ class ApplicationController {
     if ($this->_locals)
       $v->locals = $this->_locals;
 
-    // Overwrite default render options 
+    // Overwrite default render options
     // controllerin renderi (main action içerisinde manuel olarak render yazılmışsa)
     if ($this->_render)
       $v->set($this->_render["view_options"]);
@@ -166,6 +166,9 @@ class ApplicationController {
           } else if (!array_key_exists("only", $filter_action) and !array_key_exists("except", $filter_action)) {
             $this->{$filter_action_name}();
           }
+
+          // _localsda flash varsa çalıştıralım
+          if (!empty($this->flash)) ApplicationFlash::sets($this->flash);
 
           // interrupt ?
           if ($this->_redirect_to || $this->_render || $this->_send_data) return TRUE;
