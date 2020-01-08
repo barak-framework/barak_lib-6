@@ -56,7 +56,7 @@ class ApplicationI18n {
   }
 
   private static function _storage_key() {
-    return '_i18n';
+    return '_session_i18n';
   }
 
 }
