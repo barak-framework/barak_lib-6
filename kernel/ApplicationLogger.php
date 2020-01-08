@@ -181,6 +181,7 @@ class ApplicationLogger {
 
     // şu an yazılan dosyayı 1 nolu yedek dosya olarak kaydet
     rename(self::$_file_path, self::LOGPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
+
     // yeni bir log dosyası oluştur ve bilgilerini ata
     list(self::$_file_path, self::$_file_created_at) = self::_newname();
   }
