@@ -11,9 +11,7 @@ class ApplicationFlash {
   }
 
   // in ApplicationController
-  // $this->flash = [];
   // $this->flash["info"] = "gökhan";
-
   // ApplicationFlash::sets($this->flash);
 
   public static function sets($options) {
