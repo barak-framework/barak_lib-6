@@ -42,13 +42,33 @@ class BarakApplication {
 
     // Config close - modules
     self::_close_modules();
+
+    // Config close - options
+    self::_close_options();
   }
 
   private static function _init_options() {
-    ApplicationLogger::init(Application::$logger);
+
+    // Session options
+    if (!strlen(session_id())) {
+
+      // COOKIE: httponly ile JS'in ilgili cookie'yi okuması engelleme ayarı, JS'yi engelle
+      ini_set('session.cookie_httponly', 1);
+
+      // for $_SESSION hash kick!
+      session_start();
+
+    }
+
     date_default_timezone_set(Application::$timezone);
+    ApplicationLogger::init(Application::$logger);
     ApplicationDebug::init(Application::$debug);
     ApplicationI18n::init(Application::$locale);
+    ApplicationFlash::init();
+  }
+
+  private static function _close_options() {
+    ApplicationFlash::close();
   }
 
   private static function _init_modules() { // ok
@@ -74,7 +94,7 @@ class BarakApplication {
 
   private static function _import_dirs($directories) { // ok
     foreach ($directories as $directory)
-    	self::_import_dir($directory);
+      self::_import_dir($directory);
   }
 
   private static function _import_dir($directory) { // ok
