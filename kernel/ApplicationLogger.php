@@ -2,7 +2,7 @@
 
 class ApplicationLogger {
 
-  const LOGPATH = "tmp/log/";
+  const LOGGERPATH = "tmp/log/";
 
   const LEVELNAMES = ["info" => 1, "warning" => 2, "error" => 3, "fatal" => 4, "debug" => 5];
   const DRIVERNAMES = ["daily" => 1, "weekly" => 7, "montly" => 30, "yearly" => 365];
@@ -82,7 +82,7 @@ class ApplicationLogger {
 
   private static function _newname() {
     $_file_created_at = date("Y-m-d");
-    $_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGPATH . self::$_file . "_". $_file_created_at .".log";
+    $_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGGERPATH . self::$_file . "_". $_file_created_at .".log";
     return [$_file_path, $_file_created_at];
   }
 
@@ -110,13 +110,13 @@ class ApplicationLogger {
 
   private static function _exists($file) {
 
-    $_files = scandir(self::LOGPATH);
+    $_files = scandir(self::LOGGERPATH);
 
     foreach ($_files as $_file) {
 
       if (preg_match("/^(.*?)_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
         if ($match[1] == $file) {
-          return [self::LOGPATH . $match[0], $match[2]];
+          return [self::LOGGERPATH . $match[0], $match[2]];
         }
       }
     }
@@ -131,13 +131,13 @@ class ApplicationLogger {
 
   private static function _backups() {
 
-    $_files = scandir(self::LOGPATH);
+    $_files = scandir(self::LOGGERPATH);
 
     $_file_path_backups = [];
     foreach ($_files as $_file) {
 
       if (preg_match("/^" . self::$_file . "@" . "(.*?)". "_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
-        $_file_path_backups[$match[1]] = self::LOGPATH . $match[0];
+        $_file_path_backups[$match[1]] = self::LOGGERPATH . $match[0];
       }
     }
 
@@ -180,7 +180,7 @@ class ApplicationLogger {
     }
 
     // şu an yazılan dosyayı 1 nolu yedek dosya olarak kaydet
-    rename(self::$_file_path, self::LOGPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
+    rename(self::$_file_path, self::LOGGERPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
 
     // yeni bir log dosyası oluştur ve bilgilerini ata
     list(self::$_file_path, self::$_file_created_at) = self::_newname();
