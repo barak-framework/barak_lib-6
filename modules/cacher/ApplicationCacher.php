@@ -109,8 +109,7 @@ class ApplicationCacher {
   }
 
   private static function _filename_md5($key) {
-    $requesturi = preg_replace('/[^0-9a-z\.\_\-]/i', '', strtolower($_SERVER["REQUEST_URI"]));
-    return self::CACHEDIR . md5($requesturi . $key);
+    return self::CACHEDIR . md5($key);
   }
 
 }
