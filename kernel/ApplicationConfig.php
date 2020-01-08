@@ -69,5 +69,6 @@ class ApplicationConfig {
 
     return parse_ini_file(self::MAILERFILE);
   }
+
 }
 ?>
