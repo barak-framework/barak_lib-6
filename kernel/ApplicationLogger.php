@@ -46,6 +46,7 @@ class ApplicationLogger {
 
       list(self::$_file_path, self::$_file_created_at) = self::_create();
 
+      // bir daha ::init fonksiyonu çağrılmaması için
       self::$_configuration = TRUE;
     }
   }
