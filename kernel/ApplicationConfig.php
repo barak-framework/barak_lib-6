@@ -16,19 +16,7 @@ class ApplicationConfig {
     if (!file_exists(self::APPFILE))
       throw new Exception("Uygulama yapılandırma ayar dosyası mevcut değil → " . self::APPFILE);
 
-    // DEFAULT SETTINGS - start
-
-    // Session options
-    if (!strlen(session_id())) {
-
-      // COOKIE: httponly ile JS'in ilgili cookie'yi okuması engelleme ayarı, JS'yi engelle
-      ini_set('session.cookie_httponly', 1);
-
-      // for $_SESSION hash kick!
-      session_start();
-
-    }
-
+    // configuration application load in this file
     include self::APPFILE;
   }
 
