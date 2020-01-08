@@ -1,7 +1,8 @@
 <?php
+
 class ApplicationLogger {
 
-  const LOGDIR = "tmp/log/";
+  const LOGPATH = "tmp/log/";
 
   const LEVELNAMES = ["info" => 1, "warning" => 2, "error" => 3, "fatal" => 4, "debug" => 5];
   const DRIVERNAMES = ["daily" => 1, "weekly" => 7, "montly" => 30, "yearly" => 365];
@@ -54,22 +55,25 @@ class ApplicationLogger {
     if (!array_key_exists($level, self::LEVELNAMES))
       throw new Exception("Logger kullanımı için bilinmeyen method → " . $level);
 
+    // level yazmaya uygun mu bak
     if (self::$_level <= self::LEVELNAMES[$level]) {
 
       if (self::$_driver < self::_expire()) {
 
+        // sürücü süresi dolmuşsa log dosyasını döndür
         self::_rotate();
 
       } else if (self::$_size < filesize(self::$_file_path)) {
 
+        // boyut aşılmışsa da log dosyasını döndür
         self::_rotate();
 
       }
 
-      $message = strval($messages[0]);
-      // echo "bu dosya üzerine yaziliyor :" . self::$_file_path . "<br/>";
       if (!($fh = fopen(self::$_file_path, 'a')))
         throw new Exception("Log dosyası açılamadı → " . self::$_file_path);
+
+      $message = strval($messages[0]);
 
       fwrite($fh, $message . "\n");
       fclose($fh);
@@ -78,7 +82,7 @@ class ApplicationLogger {
 
   private static function _newname() {
     $_file_created_at = date("Y-m-d");
-    $_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGDIR . self::$_file . "_". $_file_created_at .".log";
+    $_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGPATH . self::$_file . "_". $_file_created_at .".log";
     return [$_file_path, $_file_created_at];
   }
 
@@ -94,28 +98,25 @@ class ApplicationLogger {
       fwrite($fh, "");
       fclose($fh);
     }
-    // echo "dosya var: ". $file . "<br/>";
 
     return [$_file_path, $_file_created_at];
   }
 
+  // self::$_file = FILE
+  // $_files =
+  // FILE_YYYY-MM-DD.log
+  // FILE@1_YYYY-MM-DD.log
+  // FILE@2_YYYY-MM-DD.log
+
   private static function _exists($file) {
 
-    $_files = scandir(self::LOGDIR);
+    $_files = scandir(self::LOGPATH);
 
     foreach ($_files as $_file) {
 
-      // self::$_file = FILE
-      // $_file =
-      // FILE_YYYY-MM-DD.log
-      // FILE@1_YYYY-MM-DD.log
-      // FILE@2_YYYY-MM-DD.log
-
       if (preg_match("/^(.*?)_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
         if ($match[1] == $file) {
-          // echo "dosyayı buldum : " . self::LOGDIR . $match[0] . "|" . $file . ":" . $match[1] . "<br/>";
-          // print_r($match);
-          return [self::LOGDIR . $match[0], $match[2]];
+          return [self::LOGPATH . $match[0], $match[2]];
         }
       }
     }
@@ -123,24 +124,23 @@ class ApplicationLogger {
     return false;
   }
 
+  // self::$_file = FILE
+  // $_files =
+  // FILE@1_YYYY-MM-DD.log
+  // FILE@2_YYYY-MM-DD.log
+
   private static function _backups() {
 
-    $_files = scandir(self::LOGDIR);
+    $_files = scandir(self::LOGPATH);
 
     $_file_path_backups = [];
     foreach ($_files as $_file) {
 
-      // self::$_file = FILE
-      // $_file =
-      // FILE@1_YYYY-MM-DD.log
-      // FILE@2_YYYY-MM-DD.log
-
       if (preg_match("/^" . self::$_file . "@" . "(.*?)". "_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
-        // print_r($match);
-        $_file_path_backups[$match[1]] = self::LOGDIR . $match[0];
+        $_file_path_backups[$match[1]] = self::LOGPATH . $match[0];
       }
-
     }
+
     return $_file_path_backups;
   }
 
@@ -157,38 +157,31 @@ class ApplicationLogger {
   }
 
   private static function _rotate() {
-    // echo self::$_file_path . " boyutu aştı<br/>";
-    // echo "<br/>rotate işlemi başlatılıyor...<br/>";
 
+    // en son yedek varsa sil
     $_file_rotate_end = self::$_file . "@" . self::$_rotate;
-    // echo "son dosya var mı bakılıyor : " . $_file_rotate_end . "<br/>";
-
     if ((list($_file_rotate_end_path,$_c) = self::_exists($_file_rotate_end))) {
-      // echo "son dosya siliniyor...";
       unlink($_file_rotate_end_path);
     }
 
+    // yedekleri al
     $_file_path_backups = self::_backups();
-    // echo "yedek loglar listeleniyor... <br/>";
-    // print_r($_file_path_backups);
-    // echo "<br/>";
 
     // taşıma yapacağından keye göre ters sırala (2->production@2_2020-01-01.log, 1->production@1_2020-01-01.log gibi)
     // son yedekten(keyden) başlamak üzere taşımaya başla ki bir birinin üzerine yazma olmasın
     krsort($_file_path_backups);
     foreach ($_file_path_backups as $_file_index => $_file_path_backup) {
+
       $_file_path_backup_before = $_file_path_backup;
-      // echo $_file_path_backup_before . "<br/>";
       if (file_exists($_file_path_backup_before)) {
         $_file_path_backup_after = str_replace("@{$_file_index}_", "@" . ($_file_index + 1) . "_", $_file_path_backup_before);
-        // echo $_file_path_backup_before . " |{$_file_index}| " . $_file_path_backup_after . "<br/>";
         rename($_file_path_backup_before, $_file_path_backup_after);
       }
     }
-    // echo "ilk dosya kaydırılıyor : " . self::$_file_path . "<br/>";
-    // echo self::$_file_path.">>>>". self::$_file . "@1_" . self::$_file_created_at;
 
-    rename(self::$_file_path, self::LOGDIR . self::$_file . "@1_" . self::$_file_created_at . ".log");
+    // şu an yazılan dosyayı 1 nolu yedek dosya olarak kaydet
+    rename(self::$_file_path, self::LOGPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
+    // yeni bir log dosyası oluştur ve bilgilerini ata
     list(self::$_file_path, self::$_file_created_at) = self::_newname();
   }
 }
