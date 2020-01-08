@@ -2,7 +2,7 @@
 
 class ApplicationCacher {
 
-  const CACHEDIR = "tmp/cache/";
+  const CACHEPATH = "tmp/cache/";
 
   const clear_expire = "._clear_expire_";
 
@@ -58,17 +58,17 @@ class ApplicationCacher {
   }
 
   public static function clear() {
-    foreach (glob(self::CACHEDIR . "*") as $filename)
+    foreach (glob(self::CACHEPATH . "*") as $filename)
       unlink($filename);
   }
 
   private static function _clear_write() {
-    $value = "Bu veri yaşam döngüsünü tamamladığında " . self::CACHEDIR . " altındaki tüm cache dosyaları silinecek";
-    self::_write(self::CACHEDIR . self::clear_expire, $value, self::$_configuration->clear);
+    $value = "Bu veri yaşam döngüsünü tamamladığında " . self::CACHEPATH . " altındaki tüm cache dosyaları silinecek";
+    self::_write(self::CACHEPATH . self::clear_expire, $value, self::$_configuration->clear);
   }
 
   private static function _clear_read() {
-    if (!self::_read(self::CACHEDIR . self::clear_expire))
+    if (!self::_read(self::CACHEPATH . self::clear_expire))
       self::clear();
   }
 
@@ -109,7 +109,7 @@ class ApplicationCacher {
   }
 
   private static function _filename_md5($key) {
-    return self::CACHEDIR . md5($key);
+    return self::CACHEPATH . md5($key);
   }
 
 }
