@@ -22,8 +22,8 @@ class ApplicationCacher {
         }
       }
 
-      if (!isset(self::$_configuration->datas)) self::$_configuration->datas = 60;
-      if (!isset(self::$_configuration->clear)) self::$_configuration->clear = 120;
+      if (!isset(self::$_configuration->datas)) self::$_configuration->datas = 60;  // 1 dakika dosya süresi
+      if (!isset(self::$_configuration->clear)) self::$_configuration->clear = 120; // 2 dakika genel süre
 
       self::_clear_write();
     }
