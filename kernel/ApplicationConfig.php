@@ -2,15 +2,17 @@
 
 class ApplicationConfig {
 
+  // kernel configuration files
   const APPFILE      = "config/application.php";
   const ROUTESFILE   = "config/routes.php";
   const LOCALESPATH  = "config/locales/";
 
+  // modules configuration files
   const DATABASEFILE = "config/database.ini";
   const CACHERFILE   = "config/cacher.ini";
   const MAILERFILE   = "config/mailer.ini";
 
-  // genel yapılandırma ayarlarını set et
+  // genel yapılandırma ayarlarını dahil et
   public static function application() {
 
     if (!file_exists(self::APPFILE))
@@ -20,34 +22,7 @@ class ApplicationConfig {
     include self::APPFILE;
   }
 
-  // veritabanı ayar dosyasını oku
-  public static function database() {
-
-    if (!file_exists(self::DATABASEFILE))
-      throw new Exception("Veritabanı ayar dosyası mevcut değil → " . self::DATABASEFILE);
-
-    return parse_ini_file(self::DATABASEFILE);
-  }
-
-  // cache ayar dosyasını oku
-  public static function cacher() {
-
-    if (!file_exists(self::CACHERFILE))
-      throw new Exception("Cacher ayar dosyası mevcut değil → " . self::CACHERFILE);
-
-    return parse_ini_file(self::CACHERFILE);
-  }
-
-  // mail ayar dosyasını oku
-  public static function mailer() {
-
-    if (!file_exists(self::MAILERFILE))
-      throw new Exception("Mailer ayar dosyası mevcut değil → " . self::MAILERFILE);
-
-    return parse_ini_file(self::MAILERFILE);
-  }
-
-  // router dosyasını oku
+  // routes yapılandırma ayarlarını dahil et
   public static function routes() {
 
     if (!file_exists(self::ROUTESFILE))
@@ -57,16 +32,42 @@ class ApplicationConfig {
     include self::ROUTESFILE;
   }
 
-  // yerel ayar dosyasını oku
+  // yerel dil yapılandırma ayarlarını oku ve dön
   public static function i18n($locale) {
 
     $localefile = self::LOCALESPATH . $locale . ".php";
     if (!file_exists($localefile))
-      throw new Exception("Yerel ayar dosyası mevcut değil → " . $localefile);
+      throw new Exception("Yerel dil ayar dosyası mevcut değil → " . $localefile);
 
     $words = include $localefile;
     return $words;
   }
 
+  // veritabanı ayar dosyasını oku ve dön
+  public static function database() {
+
+    if (!file_exists(self::DATABASEFILE))
+      throw new Exception("Veritabanı ayar dosyası mevcut değil → " . self::DATABASEFILE);
+
+    return parse_ini_file(self::DATABASEFILE);
+  }
+
+  // cacher ayar dosyasını oku ve dön
+  public static function cacher() {
+
+    if (!file_exists(self::CACHERFILE))
+      throw new Exception("Cacher ayar dosyası mevcut değil → " . self::CACHERFILE);
+
+    return parse_ini_file(self::CACHERFILE);
+  }
+
+  // mailer ayar dosyasını oku ve dön
+  public static function mailer() {
+
+    if (!file_exists(self::MAILERFILE))
+      throw new Exception("Mailer ayar dosyası mevcut değil → " . self::MAILERFILE);
+
+    return parse_ini_file(self::MAILERFILE);
+  }
 }
 ?>
