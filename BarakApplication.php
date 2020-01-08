@@ -2,13 +2,13 @@
 
 class BarakApplication {
 
-  const KERNELDIR = "lib/kernel/";
-  const MODULESDIR = "lib/modules/";
+  const KERNELPATH = "lib/kernel/";
+  const MODULESPATH = "lib/modules/";
 
   public static function run() {
 
     // Kernel class load
-    self::_import_dir(self::KERNELDIR);
+    self::_import_dir(self::KERNELPATH);
 
     // Fatal error handling
     register_shutdown_function('ApplicationDebug::shutdown');
@@ -53,22 +53,22 @@ class BarakApplication {
 
   private static function _init_modules() { // ok
     if (Application::$model) {
-      self::_import_dirs([self::MODULESDIR . 'model/', 'app/models/']);
+      self::_import_dirs([self::MODULESPATH . 'model/', 'app/models/']);
       ApplicationDatabase::init();
     }
 
     if (Application::$mailer) {
-      self::_import_dirs([self::MODULESDIR . 'mailer/', 'app/mailers/']);
+      self::_import_dirs([self::MODULESPATH . 'mailer/', 'app/mailers/']);
       ApplicationMailer::init();
     }
 
     if (Application::$cacher) {
-      self::_import_dir(self::MODULESDIR . 'cacher/');
+      self::_import_dir(self::MODULESPATH . 'cacher/');
       ApplicationCacher::init();
     }
 
     if (Application::$http) {
-      self::_import_dir(self::MODULESDIR . 'http/');
+      self::_import_dir(self::MODULESPATH . 'http/');
     }
   }
 
