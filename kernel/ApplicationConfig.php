@@ -4,8 +4,7 @@ class ApplicationConfig {
 
   const APPFILE      = "config/application.php";
   const ROUTESFILE   = "config/routes.php";
-  const LOCALESDIR   = "config/locales/";
-  const LOGGERFILE   = "config/logger.ini";
+  const LOCALESPATH  = "config/locales/";
 
   const DATABASEFILE = "config/database.ini";
   const CACHERFILE   = "config/cacher.ini";
@@ -51,15 +50,6 @@ class ApplicationConfig {
     return parse_ini_file(self::CACHERFILE);
   }
 
-  // log ayar dosyasını oku
-  public static function logger() {
-
-    if (!file_exists(self::LOGGERFILE))
-      throw new Exception("Logger ayar dosyası mevcut değil → " . self::LOGGERFILE);
-
-    return parse_ini_file(self::LOGGERFILE);
-  }
-
   // mail ayar dosyasını oku
   public static function mailer() {
 
@@ -82,7 +72,7 @@ class ApplicationConfig {
   // yerel ayar dosyasını oku
   public static function i18n($locale) {
 
-    $localefile = self::LOCALESDIR . $locale . ".php";
+    $localefile = self::LOCALESPATH . $locale . ".php";
     if (!file_exists($localefile))
       throw new Exception("Yerel ayar dosyası mevcut değil → " . $localefile);
 
