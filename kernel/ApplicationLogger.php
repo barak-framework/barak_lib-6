@@ -12,7 +12,7 @@ class ApplicationLogger {
   // configuration variables
   private static $_level = 1;            // 1 = info
   private static $_driver = 30;          // 30 day = montly
-  private static $_file = "production";
+  private static $_file = "production";  // log file name
   private static $_size = 5242880;       // 5 MB = 5 * 1024 * 1024
   private static $_rotate = 5;           // 5 backup file
 
