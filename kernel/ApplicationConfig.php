@@ -35,11 +35,11 @@ class ApplicationConfig {
   // yerel dil yapılandırma ayarlarını oku ve dön
   public static function i18n($locale) {
 
-    $locale_file = self::LOCALESPATH . $locale . ".php";
-    if (!file_exists($locale_file))
-      throw new Exception("Yerel dil ayar dosyası mevcut değil → " . $locale_file);
+    $locale_file_path = self::LOCALESPATH . $locale . ".php";
+    if (!file_exists($locale_file_path))
+      throw new Exception("Yerel dil ayar dosyası mevcut değil → " . $locale_file_path);
 
-    $words = include $locale_file;
+    $words = include $locale_file_path;
     return $words;
   }
 
