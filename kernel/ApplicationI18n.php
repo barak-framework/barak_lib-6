@@ -29,7 +29,7 @@ class ApplicationI18n {
   }
 
   public static function translate($words, $locals = null) {
-    if ($words[0] == ".") { // lazy!
+    if ($words[0] == ".") { // lazy! tembel!
       $request_template = str_replace("/", ".", ApplicationView::$main_template);
       $request_template_title = $request_template . $words;
       return self::translate($request_template_title, $locals);
