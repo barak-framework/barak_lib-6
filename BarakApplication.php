@@ -24,10 +24,10 @@ class BarakApplication {
     ApplicationConfig::application();
 
     // Config init - options
-    self::_init_options();
+    self::_init_option_kernel();
 
     // Config init - modules
-    self::_init_modules();
+    self::_init_option_modules();
 
     // Config - end
 
@@ -41,13 +41,13 @@ class BarakApplication {
     ApplicationDispatcher::run();
 
     // Config close - modules
-    self::_close_modules();
+    self::_close_option_modules();
 
     // Config close - options
-    self::_close_options();
+    self::_close_option_kernel();
   }
 
-  private static function _init_options() {
+  private static function _init_option_kernel() {
 
     // Session options
     if (!strlen(session_id())) {
@@ -67,11 +67,11 @@ class BarakApplication {
     ApplicationFlash::init();
   }
 
-  private static function _close_options() {
+  private static function _close_option_kernel() {
     ApplicationFlash::close();
   }
 
-  private static function _init_modules() { // ok
+  private static function _init_option_modules() { // ok
     if (Application::$model) {
       self::_import_dirs([self::MODULESPATH . 'model/', 'app/models/']);
       ApplicationDatabase::init();
@@ -102,7 +102,7 @@ class BarakApplication {
       require_once $class;
   }
 
-  private static function _close_modules() { // ok
+  private static function _close_option_modules() { // ok
     // Cacher : close
     if (Application::$cacher) ApplicationCacher::close();
 
