@@ -7,7 +7,7 @@ class Application {
   // application configs sets
   public static $timezone = "Europe/Istanbul";
   public static $locale = "tr";
-  public static $debug = false;
+  public static $debug = true;
   public static $logger = false;
 
   // application modules status
