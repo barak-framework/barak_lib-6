@@ -4,13 +4,13 @@ class Application {
 
   private static $_configutaion = NULL;
 
-  // application configs sets
+  // default application kernel options
   public static $timezone = "Europe/Istanbul";
   public static $locale = "tr";
   public static $debug = true;
-  public static $logger = false;
-
-  // application modules status
+  public static $logger = ["file" => "production", "level" => "info", "driver" => "weekly", "rotate" => 4, "size" => 5242880];
+  
+  // default application modules status
   public static $cacher = false;
   public static $mailer = false;
   public static $model = false;
