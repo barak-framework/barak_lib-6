@@ -1,7 +1,10 @@
 <?php
 class ApplicationDebug {
-
-  private static $_debug = true;
+  
+  // $_debug
+  // true  : show error line and codes
+  // false : show public/500.html
+  private static $_debug;
 
   public static function init($debug) {
     self::$_debug = $debug;
