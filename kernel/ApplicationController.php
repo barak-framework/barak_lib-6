@@ -144,38 +144,39 @@ class ApplicationController {
       if (array_key_exists(0, $filter_action)) {
 
         $filter_action_name = $filter_action[0];
-        if (method_exists($this, $filter_action_name)) {
+        if (!method_exists($this, $filter_action_name))
+          throw new Exception("Before/After actions olarak tanımı yapılmayan method → " . $filter_action_name);
 
-          // her action öncesi,
-          // locals yükünü boşalt
-          $this->_locals = [];
+        // her action öncesi,
+        // locals yükünü boşalt
+        $this->_locals = [];
 
-          // methodların yüklerini boşalt
-          $this->_send_data = NULL;
-          $this->_redirect_to = NULL;
-          $this->_render = NULL;
+        // methodların yüklerini boşalt
+        $this->_send_data = NULL;
+        $this->_redirect_to = NULL;
+        $this->_render = NULL;
 
-          if (array_key_exists("only", $filter_action)) {
+        if (array_key_exists("only", $filter_action)) {
 
-            if (in_array($action, $filter_action["only"])) $this->{$filter_action_name}();
+          if (in_array($action, $filter_action["only"])) $this->{$filter_action_name}();
 
-          } else if (array_key_exists("except", $filter_action)) {
+        } else if (array_key_exists("except", $filter_action)) {
 
-            if (!in_array($action, $filter_action["except"])) $this->{$filter_action_name}();
+          if (!in_array($action, $filter_action["except"])) $this->{$filter_action_name}();
 
-          } else if (!array_key_exists("only", $filter_action) and !array_key_exists("except", $filter_action)) {
-            $this->{$filter_action_name}();
-          }
-
-          // _localsda flash varsa çalıştıralım
-          if (!empty($this->flash)) ApplicationFlash::sets($this->flash);
-
-          // interrupt ?
-          if ($this->_redirect_to || $this->_render || $this->_send_data) return TRUE;
+        } else if (!array_key_exists("only", $filter_action) and !array_key_exists("except", $filter_action)) {
+          $this->{$filter_action_name}();
         }
+
+        // _localsda flash varsa çalıştıralım
+        if (!empty($this->flash)) ApplicationFlash::sets($this->flash);
+
+        // Before/After Actions için tanımlanan method(filter_action_name) çalıştıysa ve bir kesinti olduysa?
+        if ($this->_redirect_to || $this->_render || $this->_send_data) return TRUE;
 
       }
     }
+
     // kesinti olmadı!
     return FALSE;
   }
