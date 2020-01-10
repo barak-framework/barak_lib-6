@@ -10,11 +10,11 @@ class ApplicationLogger {
   private static $_configuration = NULL;
 
   // configuration variables
-  private static $_level = 1;            // 1 = info
-  private static $_driver = 30;          // 30 day = montly
-  private static $_file = "production";  // log file name
-  private static $_size = 5242880;       // 5 MB = 5 * 1024 * 1024
-  private static $_rotate = 5;           // 5 backup file
+  private static $_level;  // 1 = info     // info level
+  private static $_driver; // 7 = weekly   // weekly log
+  private static $_file;   // "production" // log file name
+  private static $_size;   // 5242880      // 5 MB = 5 * 1024 * 1024
+  private static $_rotate; // 4            // 4 backup file
 
   // find and fill path, created_at
   private static $_file_path = false;
