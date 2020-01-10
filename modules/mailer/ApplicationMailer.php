@@ -39,10 +39,10 @@ class ApplicationMailer {
 
   final public static function delivery($action = null, $args = []) { // genişletilemez fonksyion
     $mailer_class = strtolower(get_called_class());
-    list($view) = explode("mailer", $mailer_class);
-
     if (!$action)
       throw new Exception("Mailler sınıfında ilgili method belirtilmelidir → " . $mailer_class);
+    
+    list($view) = explode("mailer", $mailer_class);
 
     $m = new $mailer_class();
     $m->_configuration = self::$_configuration;
