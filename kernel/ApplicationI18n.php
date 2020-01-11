@@ -51,7 +51,7 @@ class ApplicationI18n {
     $words = $_SESSION[self::_storage_key()]->_words;
 
     if (!isset($words[$word]))
-      throw new Exception("Yerel ayar dosyasında böyle bir kelime mevcut değil → " . $word);
+      throw new Exception("Yerel dil ayar dosyasında böyle bir kelime mevcut değil → " . $word);
     return $words[$word];
   }
 
