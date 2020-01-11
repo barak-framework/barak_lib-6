@@ -60,10 +60,10 @@ class BarakApplication {
 
     }
 
-    date_default_timezone_set(Application::$timezone);
-    ApplicationLogger::init(Application::$logger);
-    ApplicationDebug::init(Application::$debug);
-    ApplicationI18n::init(Application::$locale);
+    if (!is_null(Application::$timezone)) date_default_timezone_set(Application::$timezone);
+    if (!is_null(Application::$logger)) ApplicationLogger::init(Application::$logger);
+    if (!is_null(Application::$debug)) ApplicationDebug::init(Application::$debug);
+    if (!is_null(Application::$locale)) ApplicationI18n::init(Application::$locale);
     ApplicationFlash::init();
   }
 
