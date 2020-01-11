@@ -5,16 +5,16 @@ class Application {
   private static $_configutaion = NULL;
 
   // default application kernel options
-  public static $timezone = "Europe/Istanbul";
-  public static $locale = "tr";
-  public static $debug = true;
-  public static $logger = ["file" => "production", "level" => "info", "driver" => "weekly", "rotate" => 4, "size" => 5242880];
+  public static $timezone = null;
+  public static $locale = null;
+  public static $debug = null;
+  public static $logger = null;
   
   // default application modules status
-  public static $cacher = false;
-  public static $mailer = false;
-  public static $model = false;
-  public static $http = false;
+  public static $cacher = null;
+  public static $mailer = null;
+  public static $model = null;
+  public static $http = null;
 
   public static function set($key, $value) {
     if (!isset(self::${$key}))
