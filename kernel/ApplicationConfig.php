@@ -16,7 +16,7 @@ class ApplicationConfig {
   public static function application() {
 
     if (!file_exists(self::APPFILE))
-      throw new Exception("Uygulama yapılandırma ayar dosyası mevcut değil → " . self::APPFILE);
+      exit("Uygulama yapılandırma ayar dosyası mevcut değil → " . self::APPFILE);
 
     // configuration application load in this file
     include self::APPFILE;

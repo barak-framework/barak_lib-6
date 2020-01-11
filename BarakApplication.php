@@ -7,7 +7,7 @@ class BarakApplication {
 
   public static function run() {
 
-    // Kernel class load
+    // Kernel classes load
     self::_import_dir(self::KERNELPATH);
 
     // Fatal error handling
@@ -20,7 +20,12 @@ class BarakApplication {
     set_error_handler('ApplicationDebug::error');
 
     // Config - start
+    // Application, Routers alias functions
     self::_alias_extract_configs_of_application();
+
+    // Include config of application
+    // Set Application::$options variable
+    // Application::$options["timezone"] etc.
     ApplicationConfig::application();
 
     // Config init - options
@@ -28,7 +33,6 @@ class BarakApplication {
 
     // Config init - modules
     self::_init_option_modules();
-
     // Config - end
 
     // Alias : get global functions
@@ -60,10 +64,10 @@ class BarakApplication {
 
     }
 
-    if (!is_null(Application::$timezone)) date_default_timezone_set(Application::$timezone);
-    if (!is_null(Application::$logger)) ApplicationLogger::init(Application::$logger);
-    if (!is_null(Application::$debug)) ApplicationDebug::init(Application::$debug);
-    if (!is_null(Application::$locale)) ApplicationI18n::init(Application::$locale);
+    date_default_timezone_set(Application::$options["timezone"]);
+    ApplicationLogger::init(Application::$options["logger"]);
+    ApplicationDebug::init(Application::$options["debug"]);
+    ApplicationI18n::init(Application::$options["locale"]);
     ApplicationFlash::init();
   }
 
@@ -72,22 +76,22 @@ class BarakApplication {
   }
 
   private static function _init_option_modules() { // ok
-    if (Application::$model) {
+    if (Application::$options["model"]) {
       self::_import_dirs([self::MODULESPATH . 'model/', 'app/models/']);
       ApplicationDatabase::init();
     }
 
-    if (Application::$mailer) {
+    if (Application::$options["mailer"]) {
       self::_import_dirs([self::MODULESPATH . 'mailer/', 'app/mailers/']);
       ApplicationMailer::init();
     }
 
-    if (Application::$cacher) {
+    if (Application::$options["cacher"]) {
       self::_import_dir(self::MODULESPATH . 'cacher/');
       ApplicationCacher::init();
     }
 
-    if (Application::$http) {
+    if (Application::$options["http"]) {
       self::_import_dir(self::MODULESPATH . 'http/');
     }
   }
@@ -104,10 +108,10 @@ class BarakApplication {
 
   private static function _close_option_modules() { // ok
     // Cacher : close
-    if (Application::$cacher) ApplicationCacher::close();
+    if (Application::$options["cacher"]) ApplicationCacher::close();
 
     // Database : close
-    if (Application::$model) ApplicationDatabase::close();
+    if (Application::$options["model"]) ApplicationDatabase::close();
   }
 
   private static function _alias_extract_configs_of_application() { // ok

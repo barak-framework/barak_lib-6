@@ -17,8 +17,8 @@ class ApplicationLogger {
   private static $_rotate = 4;          // 4            // 4 backup file
 
   // find and fill path, created_at
-  private static $_file_path = false;
-  private static $_file_created_at = false;
+  private static $_file_path = null;
+  private static $_file_created_at = null;
 
   public static function init($options) {
     // yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
@@ -59,7 +59,7 @@ class ApplicationLogger {
     // level yazmaya uygun mu bak
     if (self::$_level <= self::LEVELNAMES[$level]) {
 
-      if (self::$_driver < self::_expire()) {
+      if (self::$_driver <= self::_expire()) {
 
         // sürücü süresi dolmuşsa log dosyasını döndür
         self::_rotate();
@@ -72,7 +72,7 @@ class ApplicationLogger {
       }
 
       if (!($fh = fopen(self::$_file_path, 'a')))
-        throw new Exception("Log dosyası açılamadı → " . self::$_file_path);
+        throw new Exception("Log dosyası ekleme yapılmak için açılamadı → " . self::$_file_path);
 
       $message = strval($messages[0]);
 
@@ -179,6 +179,9 @@ class ApplicationLogger {
         rename($_file_path_backup_before, $_file_path_backup_after);
       }
     }
+
+    if (!(list($_file_path, $_file_created_at) = self::_exists(self::$_file)))
+      throw new Exception("Ana Log dosyası mevcut değil → " . self::$_file);
 
     // şu an yazılan dosyayı 1 nolu yedek dosya olarak kaydet
     rename(self::$_file_path, self::LOGGERPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");

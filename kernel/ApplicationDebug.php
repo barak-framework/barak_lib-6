@@ -1,13 +1,22 @@
 <?php
 class ApplicationDebug {
-  
+
+  private static $_configuration = NULL;
+
   // $_debug
   // true  : show error line and codes
   // false : show public/500.html
-  private static $_debug = true;
+  private static $_debug;
 
   public static function init($debug) {
-    self::$_debug = $debug;
+  	// yapılandırma dosyasını bu fonkiyon ne kadar çağrılırsa çağrılsın sadece bir defa oku!
+    if (self::$_configuration == NULL) {
+
+      self::$_debug = $debug;
+
+      // bir daha ::init fonksiyonu çağrılmaması için
+      self::$_configuration = TRUE;
+    }
   }
 
   /*
