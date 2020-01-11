@@ -4,17 +4,21 @@ class Application {
 
   private static $_configutaion = NULL;
 
-  // default application kernel options
+  // application kernel options overwrite
+  // Çekirdek uygulama ayarları zaten varsayılan olarak yüklüdüğür.
+  // Eğer bu ayarlar üzerine yazılmak isteniyorsa config/application.php içerisinde set fonksiyonunda belirtilmelidir.
   public static $timezone = null;
   public static $locale = null;
   public static $debug = null;
   public static $logger = null;
   
-  // default application modules status
-  public static $cacher = null;
-  public static $mailer = null;
-  public static $model = null;
-  public static $http = null;
+  // application modules default status = true/false
+  // Uygulama modül ayarlarında aşağıdaki tüm modüller, yüklenmeyecek şekilde gelecektir.
+  // Eğer gelmesi isteniyorsa config/application.php içerisinde modules fonksiyonunda belirtilmelidir.
+  public static $cacher = false;
+  public static $mailer = false;
+  public static $model = false;
+  public static $http = false;
 
   public static function set($key, $value) {
     if (!isset(self::${$key}))
