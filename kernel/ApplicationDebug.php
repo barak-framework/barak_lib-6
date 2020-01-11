@@ -4,7 +4,7 @@ class ApplicationDebug {
   // $_debug
   // true  : show error line and codes
   // false : show public/500.html
-  private static $_debug;
+  private static $_debug = true;
 
   public static function init($debug) {
     self::$_debug = $debug;
