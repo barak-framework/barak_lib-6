@@ -176,9 +176,9 @@ class ApplicationLogger {
   private static function _rotate() {
 
     // en son yedek varsa sil
-    $_file_rotate_end = self::$_file . "@" . self::$_rotate;
-    if ((list($_file_rotate_end_path,$_c) = self::_exists($_file_rotate_end))) {
-      unlink($_file_rotate_end_path);
+    $_file_backup_end = self::$_file . "@" . self::$_rotate;
+    if ((list($_file_path_backup_end, $_file_created_at_backup_end) = self::_exists($_file_backup_end))) {
+      unlink($_file_path_backup_end);
     }
 
     // yedekleri al
