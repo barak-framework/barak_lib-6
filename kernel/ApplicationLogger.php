@@ -108,6 +108,10 @@ class ApplicationLogger {
   // FILE_YYYY-MM-DD.log
   // FILE@1_YYYY-MM-DD.log
   // FILE@2_YYYY-MM-DD.log
+  // returned
+  // ["/tmp/var/log/FILE_YYYY-MM-DD.log", "YYYY-MM-DD"];
+  // ["/tmp/var/log/FILE@1_YYYY-MM-DD.log", "YYYY-MM-DD"];
+  // ["/tmp/var/log/FILE@2_YYYY-MM-DD.log", "YYYY-MM-DD"];
 
   private static function _exists($file) {
 
@@ -135,6 +139,9 @@ class ApplicationLogger {
   // $_files =
   // FILE@1_YYYY-MM-DD.log
   // FILE@2_YYYY-MM-DD.log
+  // returned
+  // ["/tmp/var/log/FILE@1_YYYY-MM-DD.log", "YYYY-MM-DD"];
+  // ["/tmp/var/log/FILE@2_YYYY-MM-DD.log", "YYYY-MM-DD"];
 
   private static function _backups() {
 
