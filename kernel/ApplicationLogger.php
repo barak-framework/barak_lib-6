@@ -113,16 +113,22 @@ class ApplicationLogger {
 
     $_files = scandir(self::LOGGERPATH);
 
+    $_matchs = [];
     foreach ($_files as $_file) {
 
-      if (preg_match("/^(.*?)_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
-        if ($match[1] == $file) {
-          return [self::LOGGERPATH . $match[0], $match[2]];
+      if (preg_match("/^(.*?)_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $_match)) {
+        if ($_match[1] == $file) {
+          $_matchs[] = [self::LOGGERPATH . $_match[0], $_match[2]];
         }
       }
     }
-
-    return false;
+    $_matchs_count = count($_matchs);
+    if ($_matchs_count > 1)
+      throw new Exception("Log dosyasının benzerleri mevcut → " . $file);
+    else if ($_matchs_count == 1)
+      return $_matchs[0];
+    else
+      return false;
   }
 
   // self::$_file = FILE
@@ -137,8 +143,11 @@ class ApplicationLogger {
     $_file_path_backups = [];
     foreach ($_files as $_file) {
 
-      if (preg_match("/^" . self::$_file . "@" . "(.*?)". "_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $match)) {
-        $_file_path_backups[$match[1]] = self::LOGGERPATH . $match[0];
+      if (preg_match("/^" . self::$_file . "@" . "(.*?)". "_([0-9]{4}-[0-9]{2}-[0-9]{2}).log$/si", $_file, $_match)) {
+        if (array_key_exists($_match[1], $_file_path_backups))
+          throw new Exception("Yedek Log dosyasının benzerleri mevcut → " . $file);
+        else
+          $_file_path_backups[$_match[1]] = self::LOGGERPATH . $_match[0];
       }
     }
 
@@ -168,7 +177,7 @@ class ApplicationLogger {
     // yedekleri al
     $_file_path_backups = self::_backups();
 
-    // taşıma yapacağından keye göre ters sırala (2->production@2_2020-01-01.log, 1->production@1_2020-01-01.log gibi)
+    // taşıma yapacağından keye göre ters sırala (2 → production@2_2020-01-01.log, 1 → production@1_2020-01-01.log gibi)
     // son yedekten(keyden) başlamak üzere taşımaya başla ki bir birinin üzerine yazma olmasın
     krsort($_file_path_backups);
     foreach ($_file_path_backups as $_file_index => $_file_path_backup) {
@@ -180,10 +189,11 @@ class ApplicationLogger {
       }
     }
 
-    if (!(list($_file_path, $_file_created_at) = self::_exists(self::$_file)))
+    // ana log dosyası yazmak için bir kontrol et, yerinde mi beyfendi
+    if (!self::_exists(self::$_file))
       throw new Exception("Ana Log dosyası mevcut değil → " . self::$_file);
 
-    // şu an yazılan dosyayı 1 nolu yedek dosya olarak kaydet
+    // ana log dosyayı(şu an log yazılan dosyayı), 1 nolu yedek dosya olarak taşı
     rename(self::$_file_path, self::LOGGERPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
 
     // yeni bir log dosyası oluştur ve bilgilerini ata
