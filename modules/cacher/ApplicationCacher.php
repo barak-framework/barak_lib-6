@@ -65,7 +65,7 @@ class ApplicationCacher {
   private static function _clear_write() {
     $value = "Bu dosya " . date("Y-m-d | h m' s''") . " tarihinde oluşturuldu." .
              "Bu dosyanın yaşam süresi " .  ApplicationConfig::CACHERFILE . " dosyasında clear değişkenine saniye olarak atandı." .
-             "Bu dosyanın yaşam süresini tamamladığında, " . self::CACHEPATH . " altındaki tüm cache dosyaları silinecek.";
+             "Bu dosya yaşam süresini tamamladığında, " . self::CACHEPATH . " altındaki tüm cache dosyaları silinecek.";
     self::_write(self::CACHEPATH . self::clear_expire, $value, self::$_configuration->clear);
   }
 
