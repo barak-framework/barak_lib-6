@@ -204,7 +204,7 @@ class ApplicationLogger {
     rename(self::$_file_path, self::LOGGERPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
 
     // yeni bir log dosyası oluştur ve bilgilerini ata
-    list(self::$_file_path, self::$_file_created_at) = self::_newname();
+    list(self::$_file_path, self::$_file_created_at) = self::_create();
   }
 }
 ?>
