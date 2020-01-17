@@ -185,7 +185,7 @@ class ApplicationLogger {
     $_file_path_backups = self::_backups();
 
     // taşıma yapacağından keye göre ters sırala (2 → production@2_2020-01-01.log, 1 → production@1_2020-01-01.log gibi)
-    // son yedekten(keyden) başlamak üzere taşımaya başla ki bir birinin üzerine yazma olmasın
+    // son yedekten(keyden) başlamak üzere taşımaya başla ki birbirinin üzerine yazma olmasın
     krsort($_file_path_backups);
     foreach ($_file_path_backups as $_file_index => $_file_path_backup) {
 
