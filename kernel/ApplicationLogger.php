@@ -16,7 +16,7 @@ class ApplicationLogger {
   private static $_size = 5242880;      // 5242880      // 5 MB = 5 * 1024 * 1024
   private static $_rotate = 4;          // 4            // 4 backup file
 
-  // find and fill path, created_at
+  // main log path, created_at
   private static $_file_path = null;
   private static $_file_created_at = null;
 
@@ -44,7 +44,8 @@ class ApplicationLogger {
         }
       }
 
-      list(self::$_file_path, self::$_file_created_at) = self::_create();
+      // yeni log dosyası oluştur ve self::$_file_path, self::$_file_created_at değişkenlerini ata
+      self::_create();
 
       // bir daha ::init fonksiyonu çağrılmaması için
       self::$_configuration = TRUE;
@@ -81,26 +82,22 @@ class ApplicationLogger {
     }
   }
 
-  private static function _newname() {
-    $_file_created_at = date("Y-m-d");
-    $_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGGERPATH . self::$_file . "_". $_file_created_at .".log";
-    return [$_file_path, $_file_created_at];
-  }
-
   private static function _create() {
 
     if (!(list($_file_path, $_file_created_at) = self::_exists(self::$_file))) {
 
-      list($_file_path, $_file_created_at) = self::_newname();
+      // yeni ana log için oluşturma tarihi ve path ata
+      // self::$_file_created_at → oluşturma tarihi
+      self::$_file_created_at = date("Y-m-d");
+      // self::$_file_path → path, open_basedir sorunu yüzünden $_SERVER["DOCUMENT_ROOT"] yazılmak zorunda
+      self::$_file_path = $_SERVER["DOCUMENT_ROOT"] . "/" . self::LOGGERPATH . self::$_file . "_" . self::$_file_created_at . ".log";
 
-      if (!($fh = fopen($_file_path, 'w')))
-        throw new Exception("Log dosyası oluşturulmak için açılamadı → " . $_file_path);
+      if (!($fh = fopen(self::$_file_path, 'w')))
+        throw new Exception("Log dosyası oluşturulmak için açılamadı → " . self::$_file_path);
 
-      fwrite($fh, "");
+      fwrite($fh, ""); // boş yaz yani sadece dokun, geç.
       fclose($fh);
     }
-
-    return [$_file_path, $_file_created_at];
   }
 
   // self::$_file = FILE
@@ -170,6 +167,7 @@ class ApplicationLogger {
     // 1 day = 24 * 60 * 60 = 86400 seconds
     $_diff_day = abs(round($_diff_sec / 86400));
 
+    // şuan ile ana log dosyanın oluşturma zamanının farkı gün sayısını dön
     return $_diff_day;
   }
 
@@ -203,8 +201,8 @@ class ApplicationLogger {
     // ana log dosyayı(şu an log yazılan dosyayı), 1 nolu yedek dosya olarak taşı
     rename(self::$_file_path, self::LOGGERPATH . self::$_file . "@1_" . self::$_file_created_at . ".log");
 
-    // yeni bir log dosyası oluştur ve bilgilerini ata
-    list(self::$_file_path, self::$_file_created_at) = self::_create();
+    // yeni log dosyası oluştur ve self::$_file_path, self::$_file_created_at değişkenlerini ata
+    self::_create();
   }
 }
 ?>
